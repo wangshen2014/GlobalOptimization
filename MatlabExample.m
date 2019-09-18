@@ -3,14 +3,31 @@ clc
 % % Set the random stream to get exactly the same output
 % rng(14,'twister')
 
-
+%% n = 2;
 % First using GlobalSearch
 gs = GlobalSearch;
 opts = optimoptions(@fmincon,'Algorithm','interior-point');
-sixmin = @(x)(4*x(1)^2 - 2.1*x(1)^4 + x(1)^6/3 ...
-    + x(1)*x(2) - 4*x(2)^2 + 4*x(2)^4);
-problem = createOptimProblem('fmincon','x0',[-1,2],...
-    'objective',sixmin,'lb',[-3,-3],'ub',[3,3],...
+sixmin = @(x)(x(1));
+problem = createOptimProblem('fmincon','x0',[0.6,0.4],...
+    'objective',sixmin,'lb',[0,0],'ub',[1,1],'nonlcon',@nlinconst,...
+    'options',opts);
+[xming,fming,flagg,outptg,manyminsg] = run(gs,problem);
+
+% Then using MultiStart
+ms = MultiStart;
+opts = optimoptions(@fmincon,'Algorithm','interior-point');
+problem = createOptimProblem('fmincon','x0',[0.6,0.4],...
+    'objective',sixmin,'lb',[0,0],'ub',[1,1],'nonlcon',@nlinconst,...
+    'options',opts);
+[xminm,fminm,flagm,outptm,manyminsm] = run(ms,problem,50);
+
+%% n = 3;
+% First using GlobalSearch
+gs = GlobalSearch;
+opts = optimoptions(@fmincon,'Algorithm','interior-point');
+sixmin = @(x)(x(1));
+problem = createOptimProblem('fmincon','x0',[0.6,0.2,0.2],...
+    'objective',sixmin,'lb',[0,0,0],'ub',[1,1,1],'nonlcon',@nlinconst1,...
     'options',opts);
 [xming,fming,flagg,outptg,manyminsg] = run(gs,problem);
 
@@ -18,12 +35,31 @@ problem = createOptimProblem('fmincon','x0',[-1,2],...
 % First using MultiStart
 ms = MultiStart;
 opts = optimoptions(@fmincon,'Algorithm','interior-point');
-sixmin = @(x)(4*x(1)^2 - 2.1*x(1)^4 + x(1)^6/3 ...
-    + x(1)*x(2) - 4*x(2)^2 + 4*x(2)^4);
-problem = createOptimProblem('fmincon','x0',[-1,2],...
-    'objective',sixmin,'lb',[-3,-3],'ub',[3,3],...
+problem = createOptimProblem('fmincon','x0',[0.6,0.2,0.2],...
+    'objective',sixmin,'lb',[0,0,0],'ub',[1,1,1],'nonlcon',@nlinconst1,...
     'options',opts);
 [xminm,fminm,flagm,outptm,manyminsm] = run(ms,problem,50);
+
+
+%% n = 100;
+% First using GlobalSearch
+gs = GlobalSearch;
+opts = optimoptions(@fmincon,'Algorithm','interior-point');
+sixmin = @(x)(x(1));
+problem = createOptimProblem('fmincon','x0',[1 zeros(1,99)],...
+    'objective',sixmin,'lb',0*zeros(1,100),'ub',ones(1,100),'nonlcon',@nlinconst3,...
+    'options',opts);
+[xming,fming,flagg,outptg,manyminsg] = run(gs,problem);
+
+
+% Second using MultiStart
+ms = MultiStart;
+opts = optimoptions(@fmincon,'Algorithm','interior-point');
+problem = createOptimProblem('fmincon','x0',[1 zeros(1,99)],...
+    'objective',sixmin,'lb',0*zeros(1,100),'ub',ones(1,100),'nonlcon',@nlinconst3,...
+    'options',opts);
+[xminm,fminm,flagm,outptm,manyminsm] = run(ms,problem,50);
+
 
 
 % f=[-150;-175];
